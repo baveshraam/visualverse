@@ -1,0 +1,236 @@
+{
+  "en": {
+    "5k": [
+      {
+        "keywords": "genre: sci-fi, hero: astronaut, setting: Mars, plot: survival mission",
+        "story": "genre:sci-fi,hero:astronaut,setting:Mars,plot:survivalmissionI'mso,really,surprised.\nAnd,",
+        "metrics": {
+          "word_count": 2,
+          "sentence_count": 2,
+          "avg_word_length": 44.0,
+          "unique_words": 2,
+          "diversity": 1.0
+        },
+        "time": 0.21035122871398926
+      },
+      {
+        "keywords": "genre: fantasy, hero: wizard, plot: quest for magic stone",
+        "story": "genre:fantasy,hero:wizard,plot:questformagicstone'I'vejust...a...'\n'I'm...a...',he'd'd's",
+        "metrics": {
+          "word_count": 2,
+          "sentence_count": 5,
+          "avg_word_length": 43.5,
+          "unique_words": 2,
+          "diversity": 1.0
+        },
+        "time": 0.07837438583374023
+      },
+      {
+        "keywords": "genre: mystery, detective, murder investigation, dark mansion",
+        "story": "genre:mystery,detective,murderinvestigation,darkmansion'Oh,God.'It's...''\n'Yeah,''\n'Huh,''\n'What",
+        "metrics": {
+          "word_count": 4,
+          "sentence_count": 3,
+          "avg_word_length": 23.25,
+          "unique_words": 4,
+          "diversity": 1.0
+        },
+        "time": 0.08471512794494629
+      }
+    ],
+    "10k": [
+      {
+        "keywords": "genre: sci-fi, hero: astronaut, setting: Mars, plot: survival mission",
+        "story": "genre:sci-fi,hero:astronaut,setting:Mars,plot:survivalmissionIt's.Myself,the,estimated,estimated,estimated,estimated.",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 2,
+          "avg_word_length": 117.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.07922744750976562
+      },
+      {
+        "keywords": "genre: fantasy, hero: wizard, plot: quest for magic stone",
+        "story": "genre:fantasy,hero:wizard,plot:questformagicstoneTheman'shandpicked.Ahem.''What's?''\n\n\n\n*",
+        "metrics": {
+          "word_count": 2,
+          "sentence_count": 3,
+          "avg_word_length": 42.5,
+          "unique_words": 2,
+          "diversity": 1.0
+        },
+        "time": 0.07552003860473633
+      },
+      {
+        "keywords": "genre: mystery, detective, murder investigation, dark mansion",
+        "story": "genre:mystery,detective,murderinvestigation,darkmansion\n\nThere'snoreason.''\n'Dozens'\n'\n'\n'No'",
+        "metrics": {
+          "word_count": 6,
+          "sentence_count": 2,
+          "avg_word_length": 14.5,
+          "unique_words": 5,
+          "diversity": 0.8333333333333334
+        },
+        "time": 0.08383893966674805
+      }
+    ]
+  },
+  "hi": {
+    "5k": [
+      {
+        "keywords": "शैली: विज्ञान कथा, पात्र: वैज्ञानिक, कथानक: आविष्कार",
+        "story": "शैली:विज्ञानकथा,पात्र:वैज्ञानिक,कथानक:आविष्कार",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 46.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.008707761764526367
+      },
+      {
+        "keywords": "शैली: रोमांच, नायक: योद्धा, कथानक: युद्ध",
+        "story": "शैली:रोमांच,नायक:योद्धा,कथानक:युद्ध",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 35.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.008913040161132812
+      },
+      {
+        "keywords": "शैली: रहस्य, पात्र: जासूस, कथानक: अपराध",
+        "story": "शैली:रहस्य,पात्र:जासूस,कथानक:अपराध",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 34.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.009491443634033203
+      }
+    ],
+    "10k": [
+      {
+        "keywords": "शैली: विज्ञान कथा, पात्र: वैज्ञानिक, कथानक: आविष्कार",
+        "story": "शैली:विज्ञानकथा,पात्र:वैज्ञानिक,कथानक:आविष्कार",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 46.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.008953094482421875
+      },
+      {
+        "keywords": "शैली: रोमांच, नायक: योद्धा, कथानक: युद्ध",
+        "story": "शैली:रोमांच,नायक:योद्धा,कथानक:युद्ध",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 35.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.008512735366821289
+      },
+      {
+        "keywords": "शैली: रहस्य, पात्र: जासूस, कथानक: अपराध",
+        "story": "शैली:रहस्य,पात्र:जासूस,कथानक:अपराध",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 34.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.01138758659362793
+      }
+    ]
+  },
+  "ta": {
+    "5k": [
+      {
+        "keywords": "வகை: சாகசம், கதாநாயகன்: வீரன், கதைக்களம்: போர்",
+        "story": "வகை:சாகசம்,கதாநாயகன்:வீரன்,கதைக்களம்:",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 37.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.04950380325317383
+      },
+      {
+        "keywords": "வகை: அறிவியல், கதாநாயகன்: விஞ்ஞானி, கதைக்களம்: எதிர்காலம்",
+        "story": "வகை:அறிவியல்,கதாநாயகன்:விஞ்ஞானி,கதைக்களம்:",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 42.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.08129692077636719
+      },
+      {
+        "keywords": "வகை: காதல், இடம்: கடற்கரை, கதைக்களம்: மீண்டும் சந்திப்பு",
+        "story": "வகை:காதல்,இடம்:கடற்கரை,கதைக்களம்:மீࣿপ்ஞானி,",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 43.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.08366203308105469
+      }
+    ],
+    "10k": [
+      {
+        "keywords": "வகை: சாகசம், கதாநாயகன்: வீரன், கதைக்களம்: போர்",
+        "story": "வகை:சாகசம்,கதாநாயகன்:வீரன்,கதைக்களம்:",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 37.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.03952789306640625
+      },
+      {
+        "keywords": "வகை: அறிவியல், கதாநாயகன்: விஞ்ஞானி, கதைக்களம்: எதிர்காலம்",
+        "story": "வகை:அறிவியல்,கதாநாயகன்:விஞ்ஞானி,கதை་ノ koran فசண்:",
+        "metrics": {
+          "word_count": 3,
+          "sentence_count": 1,
+          "avg_word_length": 15.666666666666666,
+          "unique_words": 3,
+          "diversity": 1.0
+        },
+        "time": 0.07408809661865234
+      },
+      {
+        "keywords": "வகை: காதல், இடம்: கடற்கரை, கதைக்களம்: மீண்டும் சந்திப்பு",
+        "story": "வகை:காதல்,இடம்:கடற்கரை,கதைக்களம்:மீண்டی��ம்",
+        "metrics": {
+          "word_count": 1,
+          "sentence_count": 1,
+          "avg_word_length": 43.0,
+          "unique_words": 1,
+          "diversity": 1.0
+        },
+        "time": 0.07715368270874023
+      }
+    ]
+  }
+}

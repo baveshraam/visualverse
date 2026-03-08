@@ -1,0 +1,68 @@
+# VisualVerse Backend — Full Dependency List
+# Production NLP: Llama 3.2 3B (unsloth, 4-bit) + SD 1.5 LCM
+
+# ── FastAPI ────────────────────────────────────────────────────────────────────
+fastapi==0.109.0
+uvicorn==0.27.0
+python-multipart==0.0.6
+pydantic==2.5.3
+starlette==0.35.1
+python-dotenv==1.0.0
+
+# ── PyTorch (install with CUDA 12.1 wheel — see notes below) ──────────────────
+# Run manually (already done by setup.ps1):
+#   pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 \
+#               --index-url https://download.pytorch.org/whl/cu121
+torch==2.6.0
+torchvision==0.21.0
+torchaudio==2.6.0
+
+
+# ── LLM (Llama 3.2 3B via unsloth mirror) ────────────────────────────────────
+# transformers >= 4.43 required for Llama-3.2 apply_chat_template support
+transformers>=4.43.0
+tokenizers>=0.19.0
+sentencepiece==0.1.99
+
+# 4-bit quantization
+bitsandbytes>=0.43.0
+
+# device_map="auto" for quantized model sharding across GPU/CPU
+accelerate>=0.30.0
+
+# ── Image Generation (SD 1.5 + LCM LoRA) ─────────────────────────────────────
+# diffusers >= 0.29 required for LCMScheduler + load_lora_weights
+diffusers>=0.29.0
+peft>=0.10.0           # Required by diffusers for LoRA loading (load_lora_weights)
+ipywidgets>=8.0.0      # HuggingFace download progress bars
+google-genai>=1.0.0    # Gemini API integration
+
+# ── NLP: SpaCy (syntax, NER, dependency parsing) ─────────────────────────────
+# spacy 3.8.7+ has Python 3.13 pre-built wheels (3.7.x source-only on Py3.13)
+spacy>=3.8.7
+
+
+# ── NLP: Language Detection ───────────────────────────────────────────────────
+langdetect==1.0.9
+
+# ── NLP: Other Text Analysis ──────────────────────────────────────────────────
+nltk==3.8.1
+scikit-learn==1.3.2
+gensim==4.3.2
+sentence-transformers==2.2.2
+datasets==2.16.1
+keybert==0.8.3
+yake==0.4.8
+bertopic==0.16.0
+
+# ── Mind-Map Generation ───────────────────────────────────────────────────────
+networkx==3.2.1
+graphviz==0.20.1
+pyvis==0.3.2
+matplotlib==3.8.2
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+numpy==1.26.3
+pandas==2.1.4
+tqdm==4.66.1
+requests==2.31.0

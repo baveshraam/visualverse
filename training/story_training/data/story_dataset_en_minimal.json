@@ -1,0 +1,402 @@
+[
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  },
+  {
+    "keywords": "genre: sci-fi, hero: astronaut, plot: space mission",
+    "story": "The astronaut floated through the vastness of space. Her mission was clear - explore the unknown planet ahead. As she landed, strange lights appeared in the distance."
+  },
+  {
+    "keywords": "genre: fantasy, hero: wizard, plot: magic quest",
+    "story": "The old wizard clutched his staff tightly. A magical stone had been stolen from the kingdom. He must embark on a dangerous quest to retrieve it before dark forces use its power."
+  },
+  {
+    "keywords": "genre: mystery, detective, plot: murder investigation",
+    "story": "Detective Sarah examined the crime scene carefully. Clues were scattered everywhere, but something didn't add up. She knew the murderer was close, hiding in plain sight."
+  },
+  {
+    "keywords": "genre: romance, plot: love story, setting: Paris",
+    "story": "In the heart of Paris, two strangers met by chance. Their eyes locked across the café. Little did they know this moment would change their lives forever."
+  },
+  {
+    "keywords": "genre: horror, plot: haunted house, setting: mansion",
+    "story": "The old mansion creaked in the wind. Strange noises echoed through empty hallways. As darkness fell, the true horrors of the house began to reveal themselves."
+  },
+  {
+    "keywords": "genre: adventure, hero: explorer, plot: treasure hunt",
+    "story": "The explorer deciphered the ancient map. Hidden treasure awaited in a forgotten temple. With courage and determination, he ventured into the jungle."
+  },
+  {
+    "keywords": "genre: thriller, plot: conspiracy, setting: city",
+    "story": "She discovered files that shouldn't exist. A conspiracy that reached the highest levels of power. Now they were hunting her, and time was running out."
+  },
+  {
+    "keywords": "genre: comedy, plot: misunderstanding, characters: friends",
+    "story": "The mix-up was hilarious. Nobody could believe what just happened. As friends gathered to sort it out, more chaos ensued, making everything even funnier."
+  },
+  {
+    "keywords": "genre: drama, plot: family conflict, setting: home",
+    "story": "Years of silence broke that evening. Family secrets spilled across the dinner table. Healing would take time, but honesty was the first step forward."
+  },
+  {
+    "keywords": "genre: war, hero: soldier, plot: survival",
+    "story": "Behind enemy lines, the soldier fought to survive. Ammunition was running low. He had to make it back home, no matter the cost."
+  }
+]

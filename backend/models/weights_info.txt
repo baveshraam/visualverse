@@ -1,0 +1,5 @@
+Exact model versions used in this project:
+- Llama 3.2 3B Instruct (4-bit NF4 quantized via bitsandbytes, unsloth mirror)
+- SD 1.5 + Latent Consistency Models (LCM LoRA)
+
+(Model weights are not uploaded to this repository due to GitHub size constraints)
