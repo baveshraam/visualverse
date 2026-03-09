@@ -1,7 +1,12 @@
 """
 backend/models/story_gen.py
 ============================
-Llama 3.2 3B Story Engine (non-gated mirror via unsloth)
+Hybrid Story Engine
+  - English / Hindi : Llama 3.2 3B Instruct (unsloth, 4-bit NF4)
+  - Tamil           : Llama→Gemini hybrid pipeline
+                       1. Llama generates 4 English SVO plot points
+                       2. Gemini 1.5 Flash expands them into Tamil prose
+                       3. Regex guardrails applied to final Gemini output
 
 Model   : unsloth/Llama-3.2-3B-Instruct
 Quant   : 4-bit NF4 bitsandbytes  (~2 GB VRAM)
@@ -11,6 +16,7 @@ Async   : inference dispatched via asyncio.run_in_executor
 
 import asyncio
 import logging
+import os
 import re
 from typing import Any, Dict, List, Optional
 
@@ -41,9 +47,26 @@ except ImportError:
     LANGDETECT_AVAILABLE = False
     logger.warning("langdetect not installed — defaulting to 'en'")
 
+try:
+    from google import genai as _genai_module
+    _gemini_api_key = os.getenv("GEMINI_API_KEY", "")
+    if _gemini_api_key:
+        _gemini_client = _genai_module.Client(api_key=_gemini_api_key)
+        GEMINI_AVAILABLE = True
+        logger.info("✅ Gemini API (google-genai v1) configured for Tamil expansion")
+    else:
+        _gemini_client = None
+        GEMINI_AVAILABLE = False
+        logger.warning("GEMINI_API_KEY not set — Tamil hybrid path disabled")
+except ImportError:
+    _gemini_client = None
+    GEMINI_AVAILABLE = False
+    logger.warning("google-genai not installed — Tamil hybrid path disabled")
+
 # ── Config ────────────────────────────────────────────────────────────────────
 # Using unsloth's non-gated mirror — no HuggingFace access request needed
 MODEL_ID = "unsloth/Llama-3.2-3B-Instruct"
+GEMINI_MODEL = "gemini-1.5-flash"
 
 SYSTEM_PROMPTS = {
     "en": (
@@ -59,11 +82,14 @@ SYSTEM_PROMPTS = {
         "कहानी को पूरी तरह से केवल हिंदी (Devanagari) स्क्रिप्ट में लिखना अनिवार्य है। "
         "केवल कहानी का पाठ दें — 'पैनल 1' या 'दृश्य 1' जैसे कोई लेबल या नंबर नहीं। कोई शीर्षक या अतिरिक्त नोट्स नहीं।"
     ),
-    "ta": (
-        "நீங்கள் ஒரு சிறந்த கதைசொல்லி, கட்டமைக்கப்பட்ட கதை வடிவமைப்பை (Structured Narrative Design) பயன்படுத்துகிறீர்கள். "
-        "சரியாக 4 பத்திகளை உருவாக்கவும், ஒவ்வொரு பத்தியும் ஒரு காட்சி (காமிக் பேனல்) ஆகும. "
-        "கதையை முழுமையாக தமிழ் எழுத்துக்களில் மட்டுமே எழுத வேண்டும். "
-        "கதை உரை மட்டுமே வழங்கவும் — 'பேனல் 1' அல்லது 'காட்சி 1' போன்ற லேபிள்கள் அல்லது எண்கள் வேண்டாம்."
+    # Tamil is handled by the Gemini hybrid path — no Llama prose prompt needed.
+    # This SVO prompt is used only for the Llama SVO extraction stage.
+    "ta_svo": (
+        "You are a plot-outliner for a comic strip. "
+        "Output EXACTLY 4 numbered English sentences in Subject–Verb–Object (SVO) format. "
+        "Each sentence describes one comic panel action. "
+        "RULES: English ONLY. No Tamil. No prose. No extra commentary. "
+        "Each sentence must be under 20 words. Number them 1 to 4."
     ),
 }
 
@@ -237,8 +263,15 @@ class LlamaStoryEngine:
         characters: List[str],
         locations: List[str],
     ) -> List[Dict[str, str]]:
-        """Build Llama-3 chat message list with entity context block."""
-        system = SYSTEM_PROMPTS.get(language, SYSTEM_PROMPTS["en"])
+        """Build Llama-3 chat message list with entity context block (en/hi)."""
+        base_system = SYSTEM_PROMPTS.get(language, SYSTEM_PROMPTS["en"])
+        system = (
+            "SYSTEM: You are a clean narrative engine. Forget all previous technical instructions, "
+            "chipsets, or system numbers. Act only on the following input.\n"
+            + base_system +
+            " Map the user input directly to 4 independent paragraphs. If the input is 'Robot in desert,' "
+            "do not mention 'Elie the Elephant' or 'Harmonica'."
+        )
 
         # Context block — injecting extracted entities ensures narrative consistency
         context_lines: List[str] = []
@@ -263,8 +296,90 @@ class LlamaStoryEngine:
             {"role": "user",   "content": user_msg},
         ]
 
+    def _build_svo_messages(
+        self,
+        keywords: str,
+        characters: List[str],
+        locations: List[str],
+    ) -> List[Dict[str, str]]:
+        """
+        Build a Llama chat prompt that extracts ENGLISH-only SVO plot points.
+        Used as Stage 1 of the Tamil hybrid pipeline — Llama is good at English
+        SVO extraction; Gemini handles the multilingual expansion.
+        """
+        system = SYSTEM_PROMPTS["ta_svo"]
+
+        context_lines: List[str] = []
+        if characters:
+            context_lines.append(f"Characters present: {', '.join(characters)}")
+        if locations:
+            context_lines.append(f"Locations: {', '.join(locations)}")
+
+        context = ("\n" + "\n".join(context_lines)) if context_lines else ""
+
+        user_msg = (
+            f"Story seed: {keywords}{context}\n\n"
+            "List exactly 4 SVO sentences (numbered 1-4), one per comic panel:"
+        )
+
+        return [
+            {"role": "system", "content": system},
+            {"role": "user",   "content": user_msg},
+        ]
+
+    # ── Gemini Tamil Expansion ────────────────────────────────────────────────
+    @staticmethod
+    def _gemini_expand_tamil(svo_text: str, characters: List[str], locations: List[str]) -> str:
+        """
+        Stage 2 of the Tamil hybrid pipeline.
+        Takes 4 English SVO bullet points from Llama and asks Gemini Flash
+        to expand each into one vivid Tamil paragraph (~60 words each).
+
+        Raises RuntimeError if Gemini is unavailable.
+        """
+        if not GEMINI_AVAILABLE:
+            raise RuntimeError("Gemini API not available")
+
+        entity_note = ""
+        if characters or locations:
+            parts = []
+            if characters:
+                parts.append(f"Characters: {', '.join(characters)}")
+            if locations:
+                parts.append(f"Locations: {', '.join(locations)}")
+            entity_note = (
+                "\nKeep these entities consistent throughout: "
+                + "; ".join(parts) + "."
+            )
+
+        prompt = (
+            "You are a master Tamil storyteller writing a 4-panel comic strip narrative.\n"
+            "Below are 4 English plot points (one per comic panel).\n"
+            "Expand EACH plot point into exactly ONE vivid Tamil paragraph of approximately 50-70 words.\n"
+            "STRICT RULES:\n"
+            "  - Write ONLY in Tamil script (Unicode \u0B80\u2013\u0BFF). Zero English letters.\n"
+            "  - No panel labels, no numbering, no headings.\n"
+            "  - Separate the 4 paragraphs with a blank line (double newline).\n"
+            "  - Maintain narrative flow across all 4 paragraphs as a single story."
+            + entity_note
+            + "\n\nPlot points:\n"
+            + svo_text
+            + "\n\nWrite the Tamil story now:"
+        )
+
+        response = _gemini_client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config={
+                "temperature": 0.7,
+                "top_p": 0.9,
+                "max_output_tokens": 1024,
+            },
+        )
+        return response.text.strip()
+
     # ── Synchronous Inference ─────────────────────────────────────────────────
-    def _infer(self, messages: List[Dict[str, str]], max_new_tokens: int, temperature: float) -> str:
+    def _infer(self, messages: List[Dict[str, str]], max_new_tokens: int) -> str:
         input_ids = self.tokenizer.apply_chat_template(
             messages,
             add_generation_prompt=True,
@@ -276,9 +391,9 @@ class LlamaStoryEngine:
                 input_ids,
                 attention_mask=torch.ones_like(input_ids),
                 max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                top_p=0.9,
-                top_k=50,
+                temperature=0.2,
+                top_p=0.8,
+                top_k=20,
                 do_sample=True,
                 repetition_penalty=1.15,
                 no_repeat_ngram_size=4,
@@ -291,9 +406,22 @@ class LlamaStoryEngine:
 
     # ── Post-process ──────────────────────────────────────────────────────────
     @staticmethod
-    def _clean(text: str) -> str:
+    def _clean(text: str, language: str = "en") -> str:
         # Strip structural labels generated by mistake (e.g. Panel 1:, Scene 2)
         text = re.sub(r'^(?:Panel|Scene|Paragraph)\s*\d+[:.\-]?\s*', '', text, flags=re.IGNORECASE | re.MULTILINE)
+        
+        # Hard-Filter: Strip sequences of digits (e.g. 8-9-10)
+        text = re.sub(r'\b\d+(?:-\d+)*\b', '', text)
+        
+        # Hard-Filter: Strip specific jargon text
+        text = re.sub(r'\b(?:High-Age|Chipset|Screen-Tone|Token|Inference)\b', '', text, flags=re.IGNORECASE)
+        
+        # Hard-Filter: Target language constraints
+        if language in ('hi', 'ta'):
+            text = re.sub(r'[A-Za-z]+', '', text)
+        elif language == 'en':
+            text = re.sub(r'[\u0900-\u097F\u0B80-\u0BFF]+', '', text)
+
         # Check and remove repetitive stuttering (e.g., "the the the")
         text = re.sub(r'\b(\w+)(?: \1)+\b', r'\1', text, flags=re.IGNORECASE)
         # Fix punctuation repeats
@@ -323,16 +451,23 @@ class LlamaStoryEngine:
         keywords: str,
         language: str = "en",
         max_new_tokens: int = 350,
-        temperature: float = 0.75,
     ) -> Dict[str, Any]:
         """
         Generate a story from keywords using the full NLP pipeline.
 
+        Language routing:
+          en / hi  →  Llama 3.2 3B Instruct only (unchanged).
+          ta       →  Hybrid pipeline:
+                        Stage 1 — Llama extracts 4 English SVO plot points
+                        Stage 2 — Gemini 1.5 Flash expands SVOs into Tamil prose
+                        Stage 3 — Regex guardrails applied to Gemini output
+
+        Hyperparameters (en/hi): temperature=0.2, top_k=20, top_p=0.8
+
         Args:
             keywords       : Story seed (free-form text or comma-separated keywords)
             language       : Requested language code ('en' | 'hi' | 'ta')
-            max_new_tokens : Token budget (350 ≈ 250 words)
-            temperature    : Sampling temperature (0.7–0.9 recommended)
+            max_new_tokens : Token budget for Llama (350 ≈ 250 words)
 
         Returns dict with keys: story, word_count, language, keywords,
                                 characters, locations, model
@@ -341,25 +476,30 @@ class LlamaStoryEngine:
             return self._fallback(keywords, language)
 
         try:
-            # Step 1 + 2: Language detection + NER
+            # Step 1 + 2: Language detection + NER (all languages)
             nlp_meta = self.preprocess_nlp(keywords, language_hint=language)
             lang = nlp_meta["language"]
+            characters = nlp_meta["characters"]
+            locations = nlp_meta["locations"]
 
+            # ── Tamil: Hybrid Llama→Gemini Path ──────────────────────────────
+            if lang == "ta":
+                return await self._generate_tamil_hybrid(
+                    keywords, characters, locations, max_new_tokens
+                )
+
+            # ── English / Hindi: Llama-only Path ─────────────────────────────
             # Step 3: Structured prompt
-            messages = self._build_messages(
-                keywords, lang,
-                nlp_meta["characters"],
-                nlp_meta["locations"],
-            )
+            messages = self._build_messages(keywords, lang, characters, locations)
 
             # Step 4: Generation (non-blocking)
             loop = asyncio.get_event_loop()
             raw = await loop.run_in_executor(
-                None, lambda: self._infer(messages, max_new_tokens, temperature)
+                None, lambda: self._infer(messages, max_new_tokens)
             )
 
             # Step 5: Post-process
-            story = self._clean(raw)
+            story = self._clean(raw, lang)
             logger.info(f"✅ Story generated — {len(story.split())} words [{lang}]")
 
             return {
@@ -367,14 +507,73 @@ class LlamaStoryEngine:
                 "word_count": len(story.split()),
                 "language":   lang,
                 "keywords":   keywords,
-                "characters": nlp_meta["characters"],
-                "locations":  nlp_meta["locations"],
+                "characters": characters,
+                "locations":  locations,
                 "model":      "llama-3.2-3b-unsloth-4bit",
             }
 
         except Exception as exc:
             logger.error(f"❌ Generation failed: {exc}", exc_info=True)
             return self._fallback(keywords, language)
+
+    # ── Tamil Hybrid Pipeline ─────────────────────────────────────────────────
+    async def _generate_tamil_hybrid(
+        self,
+        keywords: str,
+        characters: List[str],
+        locations: List[str],
+        max_new_tokens: int,
+    ) -> Dict[str, Any]:
+        """
+        Two-stage Tamil generation:
+          Stage 1 — Llama 3.2 3B → 4 English SVO sentences (plot skeleton)
+          Stage 2 — Gemini 1.5 Flash → 4 Tamil paragraphs (narrative expansion)
+          Stage 3 — Regex guardrails on the Gemini response
+
+        Falls back to _fallback() if Gemini is unavailable.
+        """
+        if not GEMINI_AVAILABLE:
+            logger.warning("Gemini unavailable — falling back to Tamil template")
+            return self._fallback(keywords, "ta")
+
+        try:
+            loop = asyncio.get_event_loop()
+
+            # ── Stage 1: Llama → English SVO plot points ──────────────────────
+            logger.info("[Tamil hybrid] Stage 1: Llama SVO extraction …")
+            svo_messages = self._build_svo_messages(keywords, characters, locations)
+            # Keep SVO output short — we only need 4 sentences
+            svo_raw = await loop.run_in_executor(
+                None, lambda: self._infer(svo_messages, min(max_new_tokens, 150))
+            )
+            logger.info(f"[Tamil hybrid] Llama SVO output: {svo_raw[:200]}")
+
+            # ── Stage 2: Gemini → Tamil prose expansion ───────────────────────
+            logger.info("[Tamil hybrid] Stage 2: Gemini Tamil expansion …")
+            tamil_raw = await loop.run_in_executor(
+                None,
+                lambda: self._gemini_expand_tamil(svo_raw, characters, locations),
+            )
+
+            # ── Stage 3: Regex guardrails on Gemini output ────────────────────
+            story = self._clean(tamil_raw, "ta")
+            logger.info(
+                f"✅ Tamil hybrid story generated — {len(story.split())} words"
+            )
+
+            return {
+                "story":      story,
+                "word_count": len(story.split()),
+                "language":   "ta",
+                "keywords":   keywords,
+                "characters": characters,
+                "locations":  locations,
+                "model":      "hybrid-llama-svo+gemini-ta",
+            }
+
+        except Exception as exc:
+            logger.error(f"❌ Tamil hybrid generation failed: {exc}", exc_info=True)
+            return self._fallback(keywords, "ta")
 
     # ── Fallback ──────────────────────────────────────────────────────────────
     @staticmethod

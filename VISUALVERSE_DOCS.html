@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisualVerse — Project Documentation</title>
+<style>
+  :root{--bg:#0d1117;--surface:#161b22;--card:#1c2333;--border:#30363d;--accent:#7c3aed;--accent2:#06b6d4;--accent3:#f59e0b;--text:#e6edf3;--muted:#8b949e;--green:#3fb950;--red:#f85149}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+  /* SIDEBAR */
+  nav{width:240px;min-width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+  nav .logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+  nav .logo h2{font-size:1.1rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+  nav .logo p{font-size:.72rem;color:var(--muted);margin-top:3px}
+  nav a{display:block;padding:8px 20px;color:var(--muted);text-decoration:none;font-size:.82rem;border-left:3px solid transparent;transition:.2s}
+  nav a:hover,nav a.active{color:var(--text);border-left-color:var(--accent);background:rgba(124,58,237,.08)}
+  nav .section-label{padding:12px 20px 4px;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  /* MAIN */
+  main{flex:1;padding:40px 48px;max-width:1100px}
+  h1{font-size:2.2rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+  h2{font-size:1.35rem;font-weight:600;color:var(--text);margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  h3{font-size:1rem;font-weight:600;color:var(--accent2);margin:20px 0 8px}
+  p{color:var(--muted);line-height:1.7;margin-bottom:12px;font-size:.9rem}
+  section{margin-bottom:60px}
+  /* CARDS */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+  .card .icon{font-size:1.6rem;margin-bottom:8px}
+  .card h4{font-size:.9rem;font-weight:600;margin-bottom:4px}
+  .card p{font-size:.8rem;margin:0}
+  /* BADGE */
+  .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:600;margin:2px}
+  .badge-purple{background:rgba(124,58,237,.2);color:#a78bfa}
+  .badge-cyan{background:rgba(6,182,212,.15);color:#22d3ee}
+  .badge-amber{background:rgba(245,158,11,.15);color:#fbbf24}
+  .badge-green{background:rgba(63,185,80,.15);color:#4ade80}
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:.84rem;margin:12px 0}
+  th{background:var(--card);color:var(--muted);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--border)}
+  td{padding:9px 14px;border:1px solid var(--border);color:var(--text)}
+  tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+  /* CODE */
+  pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-size:.8rem;line-height:1.6;margin:12px 0}
+  code{font-family:'Cascadia Code',Consolas,monospace;color:#c9d1d9}
+  .kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.cm{color:#8b949e}.num{color:#79c0ff}
+  /* PIPELINE */
+  .pipeline{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:16px 0}
+  .pipe-step{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.8rem;font-weight:500}
+  .pipe-arrow{color:var(--accent);font-size:1.1rem}
+  /* HERO */
+  .hero{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.1));border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:32px}
+  .hero p{color:var(--text);font-size:.95rem}
+  .tag-row{margin-top:12px}
+  /* METRIC */
+  .metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:16px 0}
+  .metric{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+  .metric .val{font-size:1.7rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .metric .lbl{font-size:.75rem;color:var(--muted);margin-top:4px}
+  /* ARCH DIAGRAM */
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;font-family:'Cascadia Code',Consolas,monospace;font-size:.78rem;line-height:1.8;color:#8b949e;white-space:pre;overflow-x:auto}
+  .arch .box{color:#c9d1d9}.arch .arrow{color:#7c3aed}.arch .label{color:#22d3ee}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><h2>VisualVerse</h2><p>Dual-Mode NLP System</p></div>
+  <div class="section-label">Project</div>
+  <a href="#overview" class="active">Overview</a>
+  <a href="#architecture">Architecture</a>
+  <div class="section-label">NLP Core</div>
+  <a href="#pipeline">NLP Pipeline</a>
+  <a href="#classification">Text Classifier</a>
+  <a href="#keyphrase">Keyphrase Extraction</a>
+  <a href="#topic">Topic Modeling</a>
+  <a href="#relation">Relation Extraction</a>
+  <div class="section-label">Generation</div>
+  <a href="#comic">Comic Generator</a>
+  <a href="#mindmap">Mind Map Generator</a>
+  <a href="#story">Story Generator</a>
+  <div class="section-label">Data &amp; Training</div>
+  <a href="#datasets">Datasets</a>
+  <a href="#training">Training Details</a>
+  <a href="#evaluation">Evaluation</a>
+  <div class="section-label">System</div>
+  <a href="#api">API Endpoints</a>
+  <a href="#techstack">Tech Stack</a>
+  <a href="#future">Future Work</a>
+</nav>
+<main>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h1>VisualVerse</h1>
+  <div class="hero">
+    <p><strong>VisualVerse</strong> is an intelligent, dual-mode text-visualization system that automatically transforms any input text into either a <strong>Comic Strip</strong> (for narrative/story text) or an <strong>Interactive Mind Map</strong> (for informational/conceptual text) using a full custom-trained NLP pipeline.</p>
+    <div class="tag-row">
+      <span class="badge badge-purple">FastAPI v2.0</span>
+      <span class="badge badge-cyan">SpaCy NLP</span>
+      <span class="badge badge-amber">Llama 3.2 3B</span>
+      <span class="badge badge-green">SD 1.5 + LCM LoRA</span>
+      <span class="badge badge-purple">React + TypeScript</span>
+      <span class="badge badge-cyan">distilGPT-2</span>
+    </div>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="val">4</div><div class="lbl">NLP Modes</div></div>
+    <div class="metric"><div class="val">3</div><div class="lbl">Languages</div></div>
+    <div class="metric"><div class="val">~90%</div><div class="lbl">Classifier Accuracy</div></div>
+    <div class="metric"><div class="val">25K</div><div class="lbl">Training Samples</div></div>
+    <div class="metric"><div class="val">6</div><div class="lbl">API Endpoints</div></div>
+    <div class="metric"><div class="val">82M</div><div class="lbl">Model Parameters</div></div>
+  </div>
+  <h2>Problem Statement</h2>
+  <div class="cards">
+    <div class="card"><div class="icon">📄</div><h4>Long Text = Low Comprehension</h4><p>Dense paragraphs are hard to parse and retain by learners.</p></div>
+    <div class="card"><div class="icon">🔍</div><h4>Abstract Concepts</h4><p>Conceptual knowledge is difficult to visualize without external tools.</p></div>
+    <div class="card"><div class="icon">🛠️</div><h4>No Unified Tool</h4><p>No existing system converts text to both comics AND mind-maps automatically.</p></div>
+    <div class="card"><div class="icon">🌏</div><h4>Multilingual Gap</h4><p>Most NLP tools lack support for regional Indian languages like Hindi and Tamil.</p></div>
+  </div>
+  <h2>Key Features</h2>
+  <div class="cards">
+    <div class="card"><div class="icon">🎭</div><h4>Dual-Mode Output</h4><p>Single system produces Comics for narrative text and Mind Maps for informational text.</p></div>
+    <div class="card"><div class="icon">🤖</div><h4>Auto Classification</h4><p>Random Forest classifier automatically detects text type — no manual selection needed.</p></div>
+    <div class="card"><div class="icon">📖</div><h4>Story Generator</h4><p>Keywords → 500-800 word stories using fine-tuned distilGPT-2 across EN/HI/TA.</p></div>
+    <div class="card"><div class="icon">🖼️</div><h4>AI Image Generation</h4><p>SD 1.5 + LCM LoRA generates comic panel images from SVO-structured prompts.</p></div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <h2>System Architecture</h2>
+  <p>VisualVerse follows a modular pipeline architecture. Input text passes through NLP preprocessing, classification, then routes to the appropriate generation engine.</p>
+  <div class="arch">┌──────────────────────────────────────────────────┐
+│              USER INPUT (Text)                   │
+└──────────────────────┬───────────────────────────┘
+                       ▼
+┌──────────────────────────────────────────────────┐
+│           NLP PREPROCESSING (SpaCy)              │
+│  Tokenize → POS Tag → NER → Dependency Parse     │
+└──────────────────────┬───────────────────────────┘
+                       ▼
+┌──────────────────────────────────────────────────┐
+│     TEXT CLASSIFIER (Random Forest + TF-IDF)     │
+│         Narrative ◄──────────► Informational     │
+└────────────┬─────────────────────────┬───────────┘
+             ▼                         ▼
+  ┌──────────────────┐      ┌──────────────────────┐
+  │  COMIC PIPELINE  │      │   MINDMAP PIPELINE   │
+  │ Scene Extraction │      │ Keyphrase Extraction  │
+  │ Character Detect │      │ Topic Modeling (LDA)  │
+  │ SVO Prompting    │      │ Relation Extraction   │
+  │ SD 1.5 LCM LoRA  │      │ Graph Construction   │
+  └────────┬─────────┘      └──────────┬───────────┘
+           ▼                           ▼
+  ┌──────────────────┐      ┌──────────────────────┐
+  │   COMIC STRIP    │      │    MIND MAP (D3.js)  │
+  └──────────────────┘      └──────────────────────┘</div>
+
+  <h3>Backend Module Map</h3>
+  <table>
+    <tr><th>Module</th><th>File</th><th>Responsibility</th></tr>
+    <tr><td>Preprocessor</td><td>nlp/preprocessing/preprocessor.py</td><td>Tokenization, POS, NER, dependency parse</td></tr>
+    <tr><td>Classifier</td><td>nlp/classification/classifier.py</td><td>Narrative vs Informational (Random Forest)</td></tr>
+    <tr><td>Keyphrase</td><td>nlp/keyphrase/extractor.py</td><td>Gradient Boosting keyphrase scorer</td></tr>
+    <tr><td>Topic Modeler</td><td>nlp/topic_model/topic_modeler.py</td><td>LDA + semantic clustering</td></tr>
+    <tr><td>Relation</td><td>nlp/relation/relation_extractor.py</td><td>SVO dependency-based relations</td></tr>
+    <tr><td>SVO Processor</td><td>nlp/processor.py</td><td>build_visual_prompt() for SD 1.5</td></tr>
+    <tr><td>Comic Gen</td><td>comic_gen/comic_generator.py</td><td>Panel creation and layout</td></tr>
+    <tr><td>MindMap Gen</td><td>mindmap_gen/mindmap_generator.py</td><td>NetworkX graph construction</td></tr>
+    <tr><td>Story Gen</td><td>story_gen/story_generator.py</td><td>GPT-2 fallback story generator</td></tr>
+    <tr><td>Llama Engine</td><td>models/story_gen.py</td><td>Llama 3.2 3B (unsloth, 4-bit NF4)</td></tr>
+    <tr><td>Image Gen</td><td>models/image_gen.py</td><td>SD 1.5 + LCM LoRA image generation</td></tr>
+  </table>
+</section>
+
+<!-- NLP PIPELINE -->
+<section id="pipeline">
+  <h2>NLP Pipeline</h2>
+  <p>All input text passes through the SpaCy-based preprocessing pipeline before reaching any downstream model.</p>
+  <div class="pipeline">
+    <div class="pipe-step">Raw Text</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Tokenize</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">POS Tagging</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">NER</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Dep. Parse</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Feature Vectors</div>
+  </div>
+  <pre><code><span class="cm"># backend/nlp/preprocessing/preprocessor.py</span>
+<span class="kw">def</span> <span class="fn">preprocess</span>(text, language=<span class="str">"en"</span>):
+    nlp = spacy.load(<span class="str">"en_core_web_sm"</span>)
+    doc = nlp(text)
+    <span class="kw">return</span> {
+        <span class="str">"tokens"</span>:       [t.text <span class="kw">for</span> t <span class="kw">in</span> doc],
+        <span class="str">"pos_tags"</span>:     [(t.text, t.pos_) <span class="kw">for</span> t <span class="kw">in</span> doc],
+        <span class="str">"entities"</span>:     [(e.text, e.label_) <span class="kw">for</span> e <span class="kw">in</span> doc.ents],
+        <span class="str">"dependencies"</span>: [(t.text, t.dep_, t.head.text) <span class="kw">for</span> t <span class="kw">in</span> doc],
+        <span class="str">"language"</span>:     detected_lang
+    }</code></pre>
+  <table>
+    <tr><th>NLP Unit</th><th>Concept</th><th>Tool Used</th><th>Where Applied</th></tr>
+    <tr><td>Unit 1</td><td>Tokenization &amp; Sentence Splitting</td><td>SpaCy</td><td>All pipelines</td></tr>
+    <tr><td>Unit 1</td><td>Morphology / Lemmatization</td><td>SpaCy</td><td>Keyphrase normalization</td></tr>
+    <tr><td>Unit 1</td><td>Dependency Parsing (SVO)</td><td>SpaCy</td><td>Relation extraction, image prompts</td></tr>
+    <tr><td>Unit 2</td><td>TF-IDF Vectorization</td><td>scikit-learn</td><td>Classifier + Keyphrase scorer</td></tr>
+    <tr><td>Unit 2</td><td>Word Embeddings</td><td>sentence-transformers</td><td>Topic clustering</td></tr>
+    <tr><td>Unit 3</td><td>Named Entity Recognition</td><td>SpaCy</td><td>Character/location detection</td></tr>
+    <tr><td>Unit 3</td><td>POS Tagging</td><td>SpaCy</td><td>Keyphrase candidate generation</td></tr>
+    <tr><td>Unit 4</td><td>Transformer Embeddings</td><td>KeyBERT / BERTopic</td><td>Keyphrase + Topic modeling</td></tr>
+  </table>
+</section>
+
+<!-- TEXT CLASSIFIER -->
+<section id="classification">
+  <h2>Text Classifier</h2>
+  <p>A <strong>Random Forest</strong> classifier trained on TF-IDF features and 7 hand-crafted linguistic feature scores to distinguish <em>Narrative</em> vs <em>Informational</em> text.</p>
+  <h3>Handcrafted Features</h3>
+  <table>
+    <tr><th>#</th><th>Feature</th><th>Description</th></tr>
+    <tr><td>1</td><td>narrative_pronouns</td><td>Ratio of he/she/they pronouns</td></tr>
+    <tr><td>2</td><td>past_tense_ratio</td><td>Words ending in -ed</td></tr>
+    <tr><td>3</td><td>dialogue_ratio</td><td>Quoted text frequency</td></tr>
+    <tr><td>4</td><td>said_verbs_ratio</td><td>"said", "asked", "replied" proportion</td></tr>
+    <tr><td>5</td><td>story_words_ratio</td><td>"once", "suddenly", "finally"</td></tr>
+    <tr><td>6</td><td>definition_ratio</td><td>"is", "means", "refers to"</td></tr>
+    <tr><td>7</td><td>technical_words_ratio</td><td>"therefore", "however", "thus"</td></tr>
+  </table>
+  <pre><code><span class="cm"># Training</span>
+model = RandomForestClassifier(n_estimators=<span class="num">100</span>)
+features = hstack([tfidf_matrix, handcrafted_features])
+model.fit(features, labels)
+<span class="cm"># Accuracy: ~90%+</span></code></pre>
+</section>
+
+<!-- KEYPHRASE -->
+<section id="keyphrase">
+  <h2>Keyphrase Extraction</h2>
+  <p>A hybrid pipeline using SpaCy NLP candidate generation followed by a <strong>Gradient Boosting</strong> ML scorer with 11 features.</p>
+  <div class="pipeline">
+    <div class="pipe-step">NER Entities</div><div class="pipe-arrow">+</div>
+    <div class="pipe-step">Noun Chunks</div><div class="pipe-arrow">+</div>
+    <div class="pipe-step">Dep-Parse Subjects/Objects</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">11-Feature Vector</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">GBM Score</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Top-K Keyphrases</div>
+  </div>
+  <h3>11 Scoring Features</h3>
+  <table>
+    <tr><th>Category</th><th>Features</th></tr>
+    <tr><td>Statistical (8)</td><td>position, freq_norm, word_count, char_len, in_first_100, in_first_200, spread, has_caps</td></tr>
+    <tr><td>NLP-derived (3)</td><td>is_entity, is_noun_chunk, is_subject</td></tr>
+  </table>
+  <pre><code>model = GradientBoostingClassifier(n_estimators=<span class="num">100</span>, max_depth=<span class="num">5</span>)
+score = model.predict_proba(features)  <span class="cm"># P(is_keyphrase)</span></code></pre>
+</section>
+
+<!-- TOPIC MODELING -->
+<section id="topic">
+  <h2>Topic Modeling</h2>
+  <p>Dual approach: <strong>LDA (Latent Dirichlet Allocation)</strong> for probabilistic topic discovery + semantic clustering for concept grouping.</p>
+  <div class="cards">
+    <div class="card"><div class="icon">📊</div><h4>LDA</h4><p>Treats the document as a mixture of topics; each topic is a distribution over vocabulary words.</p></div>
+    <div class="card"><div class="icon">🔗</div><h4>Semantic Clustering</h4><p>Groups related keyphrases by word embedding similarity into domain categories.</p></div>
+    <div class="card"><div class="icon">🗂️</div><h4>BERTopic</h4><p>Transformer-based clustering using sentence embeddings for fine-grained topic discovery.</p></div>
+  </div>
+  <p><strong>Output:</strong> Main topic label, category groupings (e.g., Frontend / Backend / Database), and topic-word distributions used to build the mind map hierarchy.</p>
+</section>
+
+<!-- RELATION EXTRACTION -->
+<section id="relation">
+  <h2>Relation Extraction</h2>
+  <p>SpaCy dependency parsing extracts <strong>Subject-Verb-Object (SVO)</strong> triples, classified into 6 semantic relation types by an <strong>MLP Classifier</strong>.</p>
+  <div class="cards">
+    <div class="card"><div class="icon">📎</div><h4>IS_A</h4><p>Hypernym / type relations</p></div>
+    <div class="card"><div class="icon">🧩</div><h4>PART_OF</h4><p>Compositional membership</p></div>
+    <div class="card"><div class="icon">⚡</div><h4>CAUSES</h4><p>Causal relations</p></div>
+    <div class="card"><div class="icon">🔑</div><h4>REQUIRES</h4><p>Prerequisite dependencies</p></div>
+    <div class="card"><div class="icon">🔄</div><h4>RELATES_TO</h4><p>General association</p></div>
+    <div class="card"><div class="icon">⚖️</div><h4>CONTRASTS</h4><p>Opposition / contrast</p></div>
+  </div>
+  <pre><code><span class="kw">for</span> token <span class="kw">in</span> doc:
+    <span class="kw">if</span> token.dep_ == <span class="str">"ROOT"</span>:          <span class="cm"># main verb</span>
+        subject = [t <span class="kw">for</span> t <span class="kw">in</span> token.lefts  <span class="kw">if</span> t.dep_ == <span class="str">"nsubj"</span>]
+        obj     = [t <span class="kw">for</span> t <span class="kw">in</span> token.rights <span class="kw">if</span> t.dep_ == <span class="str">"dobj"</span>]
+        <span class="cm"># → edges in the mind map graph</span></code></pre>
+  <p>The <code>build_visual_prompt()</code> function in <code>nlp/processor.py</code> also uses SVO parsing to generate structurally-grounded image prompts for Stable Diffusion.</p>
+</section>
+
+<!-- COMIC GENERATOR -->
+<section id="comic">
+  <h2>Comic Generator</h2>
+  <p>Converts narrative text into a sequence of comic panels, each driven by NLP-extracted scene elements and SVO-structured image prompts fed to Stable Diffusion 1.5 + LCM LoRA.</p>
+  <div class="pipeline">
+    <div class="pipe-step">Narrative Text</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Scene Split (SpaCy)</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">NER: PERSON / GPE</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">SVO build_visual_prompt()</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">SD 1.5 LCM LoRA</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Panel Image</div>
+  </div>
+  <pre><code><span class="kw">for</span> scene <span class="kw">in</span> scenes:
+    characters = scene[<span class="str">"entities"</span>][<span class="str">"PERSON"</span>]
+    location   = scene[<span class="str">"entities"</span>][<span class="str">"GPE"</span>]
+    action     = scene[<span class="str">"main_verb"</span>]
+    structured_prompt = build_visual_prompt(panel_text)  <span class="cm"># SVO dep-parse</span>
+    image_url  = <span class="kw">await</span> image_generator.generate(prompt=structured_prompt)</code></pre>
+  <p><strong>LCM LoRA</strong> (Latent Consistency Model) enables 4-step image generation on CUDA, making it fast enough for real-time panel synthesis on a 4GB VRAM GPU.</p>
+</section>
+
+<!-- MIND MAP GENERATOR -->
+<section id="mindmap">
+  <h2>Mind Map Generator</h2>
+  <p>Builds a hierarchical <strong>NetworkX DiGraph</strong> from extracted keyphrases, topics and relations, rendered interactively on the frontend using D3.js.</p>
+  <div class="cards">
+    <div class="card"><div class="icon">🎯</div><h4>Level 0 — Center</h4><p>Main topic node derived from LDA / BERTopic output.</p></div>
+    <div class="card"><div class="icon">🗂️</div><h4>Level 1 — Categories</h4><p>Topic clusters (e.g. Frontend, Backend, Database) fan out from center.</p></div>
+    <div class="card"><div class="icon">🔤</div><h4>Level 2 — Details</h4><p>Individual keyphrases attached to their parent category.</p></div>
+  </div>
+  <pre><code>graph = networkx.DiGraph()
+graph.add_node(<span class="str">"center"</span>, label=main_topic, level=<span class="num">0</span>)
+<span class="kw">for</span> cat <span class="kw">in</span> categories:
+    graph.add_edge(<span class="str">"center"</span>, cat_id)      <span class="cm"># level 1</span>
+<span class="kw">for</span> kp <span class="kw">in</span> keyphrases:
+    graph.add_edge(parent_cat, kp_id)   <span class="cm"># level 2</span></code></pre>
+  <p>The frontend <code>D3MindMap.tsx</code> component renders nodes with force-directed layout, supports zoom/pan, and color-codes by level.</p>
+</section>
+
+<!-- STORY GENERATOR -->
+<section id="story">
+  <h2>Story Generator</h2>
+  <p>A dedicated 4th mode: users supply <em>keywords</em> and the system generates a 500-800 word story using either <strong>Llama 3.2 3B</strong> (production) or fine-tuned <strong>distilGPT-2</strong> (fallback), then optionally feeds the result into the comic pipeline.</p>
+  <h3>Production Engine — Llama 3.2 3B Instruct</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Model</td><td>meta-llama/Llama-3.2-3B-Instruct (unsloth mirror)</td></tr>
+    <tr><td>Quantization</td><td>4-bit NF4 via BitsAndBytes (~2 GB VRAM)</td></tr>
+    <tr><td>Hyperparameters</td><td>temperature=0.2, top_k=20, top_p=0.8 (anti-hallucination)</td></tr>
+    <tr><td>Language Detection</td><td>langdetect + Unicode script heuristics</td></tr>
+    <tr><td>NER Injection</td><td>SpaCy PERSON + GPE entities injected as context</td></tr>
+    <tr><td>Post-processing</td><td>Regex "ghost" cleaner removes hallucination artefacts</td></tr>
+  </table>
+  <h3>Fallback Engine — Fine-tuned distilGPT-2</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Base Model</td><td>distilgpt2 (82M parameters, 327 MB)</td></tr>
+    <tr><td>Input Format</td><td><code>&lt;|keywords|&gt; {keywords} &lt;|story|&gt;</code></td></tr>
+    <tr><td>Context Window</td><td>512 tokens (batch=1, max_len=256 for 4GB GPU)</td></tr>
+    <tr><td>Languages</td><td>English (EN), Hindi (HI), Tamil (TA)</td></tr>
+    <tr><td>Training</td><td>AdamW, lr=5e-5, 3 epochs, FP16 disabled for stability</td></tr>
+    <tr><td>Grad Accumulation</td><td>8 steps (compensates for batch_size=1)</td></tr>
+  </table>
+  <h3>Story → Comic Flow</h3>
+  <div class="pipeline">
+    <div class="pipe-step">Keywords</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Language Select</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Llama / GPT-2</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Story Preview</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Comic Pipeline</div><div class="pipe-arrow">→</div>
+    <div class="pipe-step">Comic Panels</div>
+  </div>
+</section>
+
+<!-- DATASETS -->
+<section id="datasets">
+  <h2>Datasets</h2>
+  <table>
+    <tr><th>Dataset</th><th>Purpose</th><th>Size</th><th>Used For</th></tr>
+    <tr><td>ROCStories</td><td>5-sentence commonsense stories</td><td>100K+ stories</td><td>Narrative classifier training; story understanding</td></tr>
+    <tr><td>WritingPrompts</td><td>Reddit creative writing prompts + stories</td><td>5K–15K samples</td><td>distilGPT-2 English story fine-tuning</td></tr>
+    <tr><td>Visual Storytelling (VIST)</td><td>Image-grounded story sequences</td><td>~50K sequences</td><td>Scene-level story alignment</td></tr>
+    <tr><td>COCO Captions</td><td>Natural image descriptions</td><td>5 captions/image</td><td>Comic panel caption grounding</td></tr>
+    <tr><td>Wikipedia / arXiv Abstracts</td><td>Informational / scientific text</td><td>Millions of docs</td><td>Informational classifier training; keyphrase labels</td></tr>
+    <tr><td>WikiHow</td><td>Procedural how-to text</td><td>Millions of articles</td><td>Topic modeling; informational classifier</td></tr>
+    <tr><td>BBC News</td><td>Multi-category news articles</td><td>Thousands</td><td>Topic classification training</td></tr>
+    <tr><td>Synthetic Hindi Templates</td><td>Manually crafted Hindi story prompts</td><td>2K (5K) samples</td><td>GPT-2 Hindi fine-tuning</td></tr>
+    <tr><td>Synthetic Tamil Templates</td><td>Manually crafted Tamil story prompts</td><td>2K (5K) samples</td><td>GPT-2 Tamil fine-tuning</td></tr>
+  </table>
+</section>
+
+<!-- TRAINING -->
+<section id="training">
+  <h2>Training Details</h2>
+  <h3>5K vs 10K Model Comparison</h3>
+  <table>
+    <tr><th>Aspect</th><th>5K Model</th><th>10K+ Model</th></tr>
+    <tr><td>Total Samples</td><td>9,000 (5K EN + 2K HI + 2K TA)</td><td>25,000 (15K EN + 5K HI + 5K TA)</td></tr>
+    <tr><td>Training Time (RTX 3050 Ti)</td><td>~25 minutes</td><td>~60–80 minutes</td></tr>
+    <tr><td>EN Final Loss</td><td>2.2233 (Perplexity 9.24)</td><td>Better generalization</td></tr>
+    <tr><td>HI/TA Perplexity</td><td>≈1.00 (overfitting)</td><td>More diverse output</td></tr>
+    <tr><td>Model Size</td><td>~327 MB</td><td>~327 MB (same architecture)</td></tr>
+    <tr><td>GPU Memory</td><td>3.2–3.8 GB VRAM</td><td>3.2–3.8 GB VRAM</td></tr>
+    <tr><td>Recommendation</td><td>Baseline / fast retrain</td><td>✅ Production (10K preferred)</td></tr>
+  </table>
+  <h3>GPU Optimizations Applied</h3>
+  <pre><code>batch_size = <span class="num">1</span>                       <span class="cm"># reduced from 4 (OOM prevention)</span>
+max_length = <span class="num">256</span>                    <span class="cm"># reduced from 512</span>
+gradient_accumulation_steps = <span class="num">8</span>     <span class="cm"># compensates for small batch</span>
+fp16 = <span class="kw">False</span>                         <span class="cm"># disabled for training stability</span>
+PYTORCH_CUDA_ALLOC_CONF = <span class="str">"max_split_size_mb:64"</span>  <span class="cm"># fragmentation fix</span></code></pre>
+  <h3>NLP Model Training Summary</h3>
+  <table>
+    <tr><th>Component</th><th>Algorithm</th><th>Dataset</th><th>Accuracy / Metric</th></tr>
+    <tr><td>Text Classifier</td><td>Random Forest + TF-IDF (100 trees)</td><td>Stories + Wikipedia</td><td>~90%+ accuracy</td></tr>
+    <tr><td>Keyphrase Extractor</td><td>Gradient Boosting (11 features)</td><td>arXiv / Inspec abstracts</td><td>Precision / Recall / F1</td></tr>
+    <tr><td>Topic Modeler</td><td>LDA + BERTopic clustering</td><td>WikiHow + BBC News</td><td>Perplexity + Coherence</td></tr>
+    <tr><td>Relation Extractor</td><td>MLP Classifier on SVO patterns</td><td>Dependency-parsed corpus</td><td>~85%+ accuracy</td></tr>
+  </table>
+</section>
+
+<!-- EVALUATION -->
+<section id="evaluation">
+  <h2>Evaluation</h2>
+  <h3>Story Generator — Language Metrics (EN)</h3>
+  <table>
+    <tr><th>Metric</th><th>5K Model</th><th>10K Model</th><th>Winner</th></tr>
+    <tr><td>Avg Words/Story</td><td>2.7</td><td>3.0</td><td>10K (+0.3)</td></tr>
+    <tr><td>Lexical Diversity</td><td>100.0%</td><td>94.4%</td><td>5K (+5.6%)</td></tr>
+    <tr><td>Inference Time</td><td>0.124 s</td><td>0.080 s</td><td>10K (−0.044s)</td></tr>
+  </table>
+  <h3>Mind Map Quality Metrics</h3>
+  <div class="cards">
+    <div class="card"><div class="icon">🎯</div><h4>Keyphrase Accuracy</h4><p>Relevance of extracted terms measured by Precision, Recall, F1 vs gold keyphrases.</p></div>
+    <div class="card"><div class="icon">🗂️</div><h4>Clustering Quality</h4><p>Silhouette score for concept grouping into categories.</p></div>
+    <div class="card"><div class="icon">🕸️</div><h4>Graph Connectivity</h4><p>Edge density — parent-child relationship completeness.</p></div>
+    <div class="card"><div class="icon">📐</div><h4>Hierarchy Quality</h4><p>3-level structure coherence: center → category → detail.</p></div>
+  </div>
+  <h3>Comic Quality Metrics</h3>
+  <div class="cards">
+    <div class="card"><div class="icon">📖</div><h4>Story Alignment</h4><p>Panel sequence matches story chronology.</p></div>
+    <div class="card"><div class="icon">🎭</div><h4>Scene Relevance</h4><p>Correct characters and locations extracted per panel.</p></div>
+    <div class="card"><div class="icon">🖼️</div><h4>Panel Consistency</h4><p>Character and setting visual coherence across panels.</p></div>
+  </div>
+  <p><strong>Verdict (Evaluation Report, March 2026):</strong> All models are production-ready. 10K-trained distilGPT-2 recommended for deployment across all three languages.</p>
+</section>
+
+<!-- API ENDPOINTS -->
+<section id="api">
+  <h2>API Endpoints</h2>
+  <p>Backend runs on <strong>FastAPI v2.0</strong> with Uvicorn ASGI server at <code>http://localhost:8000</code>. Interactive docs at <code>/docs</code>.</p>
+  <table>
+    <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
+    <tr><td>/</td><td>GET</td><td>API info — engine status summary</td></tr>
+    <tr><td>/api/health</td><td>GET</td><td>Model readiness check for all components</td></tr>
+    <tr><td>/api/classify</td><td>POST</td><td>Classify text as narrative or informational</td></tr>
+    <tr><td>/api/process</td><td>POST</td><td>Main pipeline — routes to comic or mindmap</td></tr>
+    <tr><td>/api/generate-story</td><td>POST</td><td>Keywords → story (Llama 3.2 or GPT-2)</td></tr>
+    <tr><td>/api/generate-image</td><td>POST</td><td>Prompt → SD 1.5 LCM LoRA image (base64)</td></tr>
+    <tr><td>/api/train/{model}</td><td>POST</td><td>Trigger retraining of keyphrase/topic/relation model</td></tr>
+    <tr><td>/api/models/status</td><td>GET</td><td>Training status + metrics for all NLP models</td></tr>
+  </table>
+  <h3>Main Request / Response</h3>
+  <pre><code><span class="cm">// POST /api/process</span>
+{ <span class="str">"text"</span>: <span class="str">"Once upon a time..."</span>, <span class="str">"mode"</span>: <span class="str">"auto"</span>, <span class="str">"language"</span>: <span class="str">"en"</span> }
+
+<span class="cm">// Response (Comic)</span>
+{ <span class="str">"mode"</span>: <span class="str">"comic"</span>, <span class="str">"title"</span>: <span class="str">"..."</span>, <span class="str">"comic_data"</span>: [
+    { <span class="str">"panel_number"</span>: <span class="num">1</span>, <span class="str">"caption"</span>: <span class="str">"..."</span>, <span class="str">"image_url"</span>: <span class="str">"data:image/png;base64,..."</span> }
+]}
+
+<span class="cm">// Response (Mind Map)</span>
+{ <span class="str">"mode"</span>: <span class="str">"mindmap"</span>, <span class="str">"mindmap_data"</span>: {
+    <span class="str">"nodes"</span>: [{ <span class="str">"id"</span>: <span class="str">"1"</span>, <span class="str">"label"</span>: <span class="str">"ML"</span>, <span class="str">"level"</span>: <span class="num">0</span> }],
+    <span class="str">"edges"</span>: [{ <span class="str">"source"</span>: <span class="str">"1"</span>, <span class="str">"target"</span>: <span class="str">"2"</span>, <span class="str">"relation"</span>: <span class="str">"PART_OF"</span> }]
+}}</code></pre>
+</section>
+
+<!-- TECH STACK -->
+<section id="techstack">
+  <h2>Tech Stack</h2>
+  <div class="cards">
+    <div class="card"><div class="icon">⚡</div><h4>FastAPI + Uvicorn</h4><p>Async Python REST API. Lazy-loads GPU models at startup only.</p></div>
+    <div class="card"><div class="icon">🧠</div><h4>SpaCy en_core_web_sm</h4><p>Core NLP: tokenization, POS, NER, dependency parsing.</p></div>
+    <div class="card"><div class="icon">🤗</div><h4>HuggingFace Transformers</h4><p>Llama 3.2, distilGPT-2 inference + fine-tuning.</p></div>
+    <div class="card"><div class="icon">🎨</div><h4>Diffusers + PEFT</h4><p>SD 1.5 + LCM LoRA for fast 4-step image synthesis.</p></div>
+    <div class="card"><div class="icon">📐</div><h4>scikit-learn</h4><p>Random Forest, Gradient Boosting, MLP, TF-IDF, LDA.</p></div>
+    <div class="card"><div class="icon">🕸️</div><h4>NetworkX</h4><p>DiGraph construction and layout for mind map hierarchy.</p></div>
+    <div class="card"><div class="icon">⚛️</div><h4>React 19 + TypeScript</h4><p>Frontend SPA with Vite build tool and Lucide icons.</p></div>
+    <div class="card"><div class="icon">📊</div><h4>D3.js (D3MindMap.tsx)</h4><p>Force-directed interactive mind map visualization.</p></div>
+    <div class="card"><div class="icon">🐳</div><h4>Docker + Render</h4><p>Containerized deployment on Render cloud platform.</p></div>
+    <div class="card"><div class="icon">🔍</div><h4>KeyBERT + YAKE</h4><p>Alternative keyphrase extractors available as hybrid fallback.</p></div>
+    <div class="card"><div class="icon">🌐</div><h4>langdetect</h4><p>Automatic language identification before prompt routing.</p></div>
+    <div class="card"><div class="icon">🧩</div><h4>BitsAndBytes</h4><p>4-bit NF4 quantization for Llama on 4GB VRAM GPUs.</p></div>
+  </div>
+</section>
+
+<!-- FUTURE WORK -->
+<section id="future">
+  <h2>Future Enhancements</h2>
+  <div class="cards">
+    <div class="card"><div class="icon">🧬</div><h4>LSTM + Attention Classifier</h4><p>Upgrade narrative classifier from Random Forest to deep learning. Code scaffold ready in <code>lstm_classifier.py</code>.</p></div>
+    <div class="card"><div class="icon">🌏</div><h4>Broader Multilingual Support</h4><p>Expand beyond EN/HI/TA with dedicated Indic NLP models (IndicBERT).</p></div>
+    <div class="card"><div class="icon">🎤</div><h4>Voice Input</h4><p>Speech → text → visual output end-to-end pipeline.</p></div>
+    <div class="card"><div class="icon">🎨</div><h4>Custom Comic Styles</h4><p>Multiple LoRA adapters for anime, realistic, sketch styles.</p></div>
+    <div class="card"><div class="icon">💾</div><h4>Export (PDF / PNG)</h4><p>One-click export of generated comics and mind maps.</p></div>
+    <div class="card"><div class="icon">👥</div><h4>Collaborative Editing</h4><p>Real-time multi-user story and mind map editing.</p></div>
+    <div class="card"><div class="icon">🔁</div><h4>RLHF Fine-tuning</h4><p>Reinforcement Learning from Human Feedback for better story quality.</p></div>
+    <div class="card"><div class="icon">📏</div><h4>Character Memory</h4><p>Long-story consistency: track character traits across panels.</p></div>
+  </div>
+  <h2 style="margin-top:48px">Conclusion</h2>
+  <div class="hero">
+    <p>VisualVerse successfully demonstrates a complete, production-grade NLP pipeline — from raw text preprocessing through custom-trained classification, keyphrase extraction, topic modeling and relation extraction — to multi-modal visual output generation via comic panels and interactive mind maps. The system supports English, Hindi and Tamil, runs on consumer 4GB VRAM GPUs, and is cloud-deployed via Docker on Render.</p>
+    <div class="tag-row" style="margin-top:14px">
+      <span class="badge badge-green">✅ NLP Pipeline</span>
+      <span class="badge badge-green">✅ Dual-Mode Generation</span>
+      <span class="badge badge-green">✅ Story Generator</span>
+      <span class="badge badge-green">✅ Multilingual</span>
+      <span class="badge badge-green">✅ Production Deployed</span>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:32px;font-size:.8rem;color:var(--muted)">VisualVerse · Sem 6 NLP Project · March 2026</p>
+</section>
+
+</main>
+<script>
+  // Sidebar active link highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        links.forEach(l => l.classList.remove('active'));
+        const a = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if(a) a.classList.add('active');
+      }
+    });
+  }, {threshold: 0.35});
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

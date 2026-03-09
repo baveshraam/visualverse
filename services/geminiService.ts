@@ -117,10 +117,25 @@ export const generatePanelImage = async (prompt: string, geminiApiKey?: string):
     return `data:image/svg+xml,${encodeURIComponent(svg)}`
 };
 
+/**
+ * generateStory — calls /api/generate-story on the FastAPI backend.
+ *
+ * Backend language routing (transparent to this function):
+ *   en / hi  → Llama 3.2 3B Instruct (4-bit NF4) — direct prose generation
+ *   ta       → Hybrid pipeline:
+ *                Stage 1: Llama extracts 4 English SVO plot points
+ *                Stage 2: Gemini 1.5 Flash expands SVOs → 4 Tamil paragraphs
+ *                Stage 3: Regex guardrails applied to Gemini output
+ *
+ * The `model` field in the response identifies which path ran:
+ *   "llama-3.2-3b-unsloth-4bit"   → Llama-only (en/hi)
+ *   "hybrid-llama-svo+gemini-ta"  → Hybrid (ta)
+ *   "fallback-template"           → Static template (Llama unavailable)
+ */
 export const generateStory = async (
     keywords: string,
     language: "en" | "hi" | "ta" = "en"
-): Promise<{ story: string; word_count: number; language: string }> => {
+): Promise<{ story: string; word_count: number; language: string; model?: string }> => {
     try {
         const response = await fetch(`${BACKEND_URL}/api/generate-story`, {
             method: "POST",
@@ -137,7 +152,8 @@ export const generateStory = async (
         return {
             story: data.story,
             word_count: data.word_count,
-            language: data.language
+            language: data.language,
+            model: data.model,   // "hybrid-llama-svo+gemini-ta" for Tamil
         };
     } catch (e) {
         console.error("Story generation failed:", e);
