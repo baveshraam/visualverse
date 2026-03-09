@@ -68,6 +68,17 @@ except ImportError:
 MODEL_ID = "unsloth/Llama-3.2-3B-Instruct"
 GEMINI_MODEL = "gemini-1.5-flash"
 
+# ── Translation Models Mapping ────────────────────────────────────────────────
+# Explicit mapping of supported language pairs for MarianMT translation
+# If a pair is missing, the system will use English as pivot: source → en → target
+TRANSLATION_MODELS = {
+    ("en", "hi"): "Helsinki-NLP/opus-mt-en-hi",
+    ("hi", "en"): "Helsinki-NLP/opus-mt-hi-en",
+    ("en", "ta"): "Helsinki-NLP/opus-mt-en-ta",
+    ("ta", "en"): "Helsinki-NLP/opus-mt-ta-en",
+    # Note: Tamil-Hindi direct translation not available, will use pivot
+}
+
 # ── Few-Shot Anchors — injected at the top of every multilingual system prompt ────
 # These ground the model in the correct output script before any task text.
 FEW_SHOT_ANCHORS = {
@@ -117,18 +128,13 @@ _spacy_nlp = None
 
 
 # ── Language Detection ────────────────────────────────────────────────────────
-def detect_language(text: str, hint: Optional[str] = None) -> str:
+def detect_language(text: str) -> str:
     """
-    Identify whether the input is English, Hindi, or Tamil.
-
-    Steps:
-      1. Honour explicit caller hint (en / hi / ta).
-      2. Unicode script range check — Devanagari → hi, Tamil → ta.
-      3. langdetect probabilistic fallback.
-      4. Default to 'en'.
+    Identify whether the input is English, Hindi, or Tamil explicitly from text.
     """
-    if hint and hint in ("en", "hi", "ta"):
-        return hint
+    text_clean = text.strip()
+    if not text_clean:
+        return "en"
 
     # Fast Unicode heuristic
     devanagari = sum(1 for c in text if "\u0900" <= c <= "\u097F")
@@ -209,6 +215,8 @@ class LlamaStoryEngine:
         self.tokenizer = None
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.ready = False
+        self.translation_models = {}
+        self.translation_tokenizers = {}
 
         if not TRANSFORMERS_AVAILABLE:
             logger.error("transformers not available — LlamaStoryEngine is disabled")
@@ -245,7 +253,7 @@ class LlamaStoryEngine:
             self.ready = False
 
     # ── Pre-process NLP Pipeline ──────────────────────────────────────────────
-    def preprocess_nlp(self, keywords: str, language_hint: Optional[str] = None) -> Dict[str, Any]:
+    def preprocess_nlp(self, keywords: str) -> Dict[str, Any]:
         """
         Run the NLP pre-pipeline on the raw keyword / seed text.
 
@@ -260,7 +268,7 @@ class LlamaStoryEngine:
             "locations":  List[str],   # GPE / LOC entities
           }
         """
-        language = detect_language(keywords, hint=language_hint)
+        language = detect_language(keywords)
         entities = extract_entities(keywords)
 
         logger.info(
@@ -476,6 +484,150 @@ class LlamaStoryEngine:
 
         return raw
 
+    # ── Script Validation ─────────────────────────────────────────────────────
+    @staticmethod
+    def _validate_script(text: str, target_language: str) -> tuple:
+        """
+        Validate that the text contains only the target language script.
+        
+        Returns (is_valid, detected_script)
+        - is_valid: True if text is pure in target language
+        - detected_script: 'latin', 'devanagari', 'tamil', or 'mixed'
+        """
+        latin_count = len(re.findall(r'[a-zA-Z]', text))
+        devanagari_count = len(re.findall(r'[\u0900-\u097F]', text))
+        tamil_count = len(re.findall(r'[\u0B80-\u0BFF]', text))
+        
+        total_script_chars = latin_count + devanagari_count + tamil_count
+        if total_script_chars == 0:
+            return True, "unknown"  # No script characters (unlikely)
+        
+        # Calculate percentages
+        latin_pct = latin_count / total_script_chars
+        devanagari_pct = devanagari_count / total_script_chars
+        tamil_pct = tamil_count / total_script_chars
+        
+        # Determine dominant script
+        if latin_pct > 0.85:
+            detected = "latin"
+        elif devanagari_pct > 0.85:
+            detected = "devanagari"
+        elif tamil_pct > 0.85:
+            detected = "tamil"
+        else:
+            detected = "mixed"
+        
+        # Validate against target
+        valid_map = {
+            "en": "latin",
+            "hi": "devanagari",
+            "ta": "tamil"
+        }
+        
+        expected_script = valid_map.get(target_language, "latin")
+        is_valid = (detected == expected_script)
+        
+        logger.info(f"Script validation: target={target_language}, expected={expected_script}, "
+                   f"detected={detected}, latin={latin_pct:.2f}, dev={devanagari_pct:.2f}, "
+                   f"tamil={tamil_pct:.2f}, valid={is_valid}")
+        
+        return is_valid, detected
+
+    # ── Translation ───────────────────────────────────────────────────────────
+    def _get_translation_model(self, src_lang: str, tgt_lang: str):
+        """
+        Load and cache MarianMT model for the given language pair.
+        Returns (tokenizer, model) tuple.
+        """
+        try:
+            from transformers import MarianMTModel, MarianTokenizer
+        except ImportError:
+            raise RuntimeError("Transformers not available for translation")
+        
+        # Check if we have a direct model for this pair
+        if (src_lang, tgt_lang) not in TRANSLATION_MODELS:
+            raise ValueError(f"No direct translation model for {src_lang} -> {tgt_lang}")
+        
+        model_name = TRANSLATION_MODELS[(src_lang, tgt_lang)]
+        
+        if model_name not in self.translation_models:
+            logger.info(f"Loading translation model {model_name} into cache...")
+            self.translation_tokenizers[model_name] = MarianTokenizer.from_pretrained(model_name)
+            self.translation_models[model_name] = MarianMTModel.from_pretrained(model_name).to(self.device)
+            logger.info(f"✅ Translation model {model_name} loaded successfully")
+        
+        return self.translation_tokenizers[model_name], self.translation_models[model_name]
+    
+    def _translate_direct(self, text: str, src_lang: str, tgt_lang: str) -> str:
+        """
+        Translate text using a direct language pair model.
+        Assumes the model exists in TRANSLATION_MODELS.
+        """
+        try:
+            tokenizer, model = self._get_translation_model(src_lang, tgt_lang)
+            
+            # Ensure correct tokenizer is used for the source language
+            inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            
+            with torch.no_grad():
+                translated = model.generate(**inputs, max_length=1024)
+                
+            result = tokenizer.decode(translated[0], skip_special_tokens=True)
+            return result
+        except Exception as e:
+            logger.error(f"Direct translation {src_lang} -> {tgt_lang} failed: {e}")
+            raise
+    
+    def _translate(self, text: str, src_lang: str, tgt_lang: str) -> str:
+        """
+        Translates text from source language to target language.
+        
+        Uses explicit TRANSLATION_MODELS mapping:
+        - If direct pair exists: use it
+        - If direct pair missing: use English pivot (src → en → tgt)
+        
+        This prevents tokenizer mismatch errors (e.g., Hindi text with English tokenizer).
+        All translation happens with torch.no_grad() to avoid CUDA errors.
+        """
+        if src_lang == tgt_lang:
+            return text
+            
+        logger.info(f"Translation requested: {src_lang} -> {tgt_lang}")
+        
+        try:
+            from transformers import MarianMTModel, MarianTokenizer
+        except ImportError:
+            logger.warning("Transformers not available for translation. Returning original text.")
+            return text
+        
+        # Check if direct translation is available
+        if (src_lang, tgt_lang) in TRANSLATION_MODELS:
+            logger.info(f"Using direct translation: {src_lang} -> {tgt_lang}")
+            return self._translate_direct(text, src_lang, tgt_lang)
+        else:
+            # Use English as pivot: src → en → tgt
+            logger.info(f"No direct model for {src_lang} -> {tgt_lang}. Using English pivot.")
+            
+            # Step 1: Translate to English (if not already English)
+            if src_lang != "en":
+                if (src_lang, "en") not in TRANSLATION_MODELS:
+                    logger.error(f"Cannot translate {src_lang} -> en (pivot path unavailable)")
+                    return text
+                logger.info(f"Pivot step 1: {src_lang} -> en")
+                text = self._translate_direct(text, src_lang, "en")
+            
+            # Step 2: Translate from English to target (if target is not English)
+            if tgt_lang != "en":
+                if ("en", tgt_lang) not in TRANSLATION_MODELS:
+                    logger.error(f"Cannot translate en -> {tgt_lang} (pivot path unavailable)")
+                    return text
+                logger.info(f"Pivot step 2: en -> {tgt_lang}")
+                text = self._translate_direct(text, "en", tgt_lang)
+            
+            logger.info(f"✅ Pivot translation complete: {src_lang} -> en -> {tgt_lang}")
+            return text
+
     # ── Post-process ──────────────────────────────────────────────────────────
     @staticmethod
     def _clean(text: str, language: str = "en") -> str:
@@ -549,35 +701,86 @@ class LlamaStoryEngine:
 
         try:
             # Step 1 + 2: Language detection + NER (all languages)
-            nlp_meta = self.preprocess_nlp(keywords, language_hint=language)
-            lang = nlp_meta["language"]
+            nlp_meta = self.preprocess_nlp(keywords)
+            source_language = nlp_meta["language"]
             characters = nlp_meta["characters"]
             locations = nlp_meta["locations"]
+            
+            # User-selected language overrides detection output
+            if language and language != "auto":
+                target_language = language
+            else:
+                target_language = source_language
 
-            # ── Tamil: Hybrid Llama→Gemini Path ──────────────────────────────
-            if lang == "ta":
-                return await self._generate_tamil_hybrid(
-                    keywords, characters, locations, max_new_tokens
-                )
+            # ── Step 3: Generation (Always in source language first) ──────
+            story = ""
+            generator_used = "Llama-3.2-3B"
+            
+            if source_language == "ta":
+                if GEMINI_AVAILABLE:
+                    logger.info("Routing to Tamil Hybrid Pipeline for source generation. generator_used: Llama+Gemini")
+                    result_dict = await self._generate_tamil_hybrid(
+                        keywords, characters, locations, max_new_tokens
+                    )
+                    story = result_dict.get("story", "")
+                    generator_used = "Hybrid-Llama+Gemini"
+                else:
+                    logger.warning("Gemini unavailable — falling back to Llama English generation + MarianMT translation for Tamil.")
+                    source_language = "en"  # Force English generation pipeline
+                    messages = self._build_messages(keywords, source_language, characters, locations)
+                    loop = asyncio.get_event_loop()
+                    raw = await loop.run_in_executor(None, lambda: self._infer(messages, max_new_tokens))
+                    story = self._clean(raw, source_language)
+            else:
+                logger.info(f"Routing to standard Llama Pipeline. generator_used: Llama-3.2-3B (target: {source_language})")
+                messages = self._build_messages(keywords, source_language, characters, locations)
+                loop = asyncio.get_event_loop()
+                raw = await loop.run_in_executor(None, lambda: self._infer(messages, max_new_tokens))
+                story = self._clean(raw, source_language)
 
-            # ── English / Hindi: Llama-only Path ─────────────────────────────
-            # Step 3: Structured prompt
-            messages = self._build_messages(keywords, lang, characters, locations)
+            # ── Step 4: Explicit Translation Step ──────
+            translation_applied = "none"
+            if source_language != target_language:
+                story = self._translate(story, source_language, target_language)
+                translation_applied = f"{source_language}->{target_language}"
 
-            # Step 4: Generation (non-blocking)
-            loop = asyncio.get_event_loop()
-            raw = await loop.run_in_executor(
-                None, lambda: self._infer(messages, max_new_tokens)
+            # ── Step 5: Final Language Script Validation ──────
+            # Ensure the output contains only the target language script
+            is_valid, detected_script = self._validate_script(story, target_language)
+            
+            if not is_valid:
+                logger.warning(f"Script validation failed: expected {target_language}, "
+                             f"detected {detected_script}. Applying corrective translation.")
+                
+                # Determine source language for translation based on detected script
+                script_to_lang = {
+                    "latin": "en",
+                    "devanagari": "hi",
+                    "tamil": "ta",
+                }
+                
+                if detected_script == "mixed":
+                    # For mixed scripts, try to translate from the original source
+                    logger.warning(f"Mixed script detected. Translating from {source_language} to {target_language}")
+                    story = self._translate(story, source_language, target_language)
+                    translation_applied = f"mixed_script_{source_language}->{target_language}"
+                elif detected_script in script_to_lang:
+                    detected_lang = script_to_lang[detected_script]
+                    if detected_lang != target_language:
+                        logger.warning(f"Translating {detected_lang} -> {target_language}")
+                        story = self._translate(story, detected_lang, target_language)
+                        translation_applied = f"script_correction_{detected_lang}->{target_language}"
+
+            logger.info(
+                f"✅ Story Generated | requested_language={language} | "
+                f"detected_language={source_language} | target_language={target_language} | "
+                f"generator_used={generator_used} | translation_applied={translation_applied}"
             )
-
-            # Step 5: Post-process
-            story = self._clean(raw, lang)
-            logger.info(f"✅ Story generated — {len(story.split())} words [{lang}]")
 
             return {
                 "story":      story,
                 "word_count": len(story.split()),
-                "language":   lang,
+                "language":   target_language,
                 "keywords":   keywords,
                 "characters": characters,
                 "locations":  locations,
@@ -605,8 +808,7 @@ class LlamaStoryEngine:
         Falls back to _fallback() if Gemini is unavailable.
         """
         if not GEMINI_AVAILABLE:
-            logger.warning("Gemini unavailable — falling back to Tamil template")
-            return self._fallback(keywords, "ta")
+            raise RuntimeError("Gemini unavailable — pipeline misrouted to _generate_tamil_hybrid")
 
         try:
             loop = asyncio.get_event_loop()
@@ -650,21 +852,13 @@ class LlamaStoryEngine:
     # ── Fallback ──────────────────────────────────────────────────────────────
     @staticmethod
     def _fallback(keywords: str, language: str) -> Dict[str, Any]:
+        # Templates have been removed from actual generation. This function 
+        # is strictly an error-state absolute fallback to prevent API crashes.
+        # It no longer injects external language characters.
         templates = {
-            "en": (
-                f"In a world shaped by {keywords}, a remarkable tale unfolds. "
-                "The protagonist embarks on a journey filled with wonder and peril. "
-                "Every step reveals a new challenge, yet resolve never wavers."
-            ),
-            "hi": (
-                f"{keywords} से प्रेरित एक अद्भुत कहानी है। "
-                "नायक एक असाधारण यात्रा पर निकलता है। "
-                "हर कदम पर नई चुनौतियाँ आती हैं।"
-            ),
-            "ta": (
-                f"{keywords} சார்ந்த ஒரு அற்புதமான கதை. "
-                "கதாநாயகன் ஒரு அசாதாரண பயணத்தை மேற்கொள்கிறார்."
-            ),
+            "en": "Generation failed. Please try again.",
+            "hi": "Generation failed. Please try again.",
+            "ta": "Generation failed. Please try again.",
         }
         story = templates.get(language, templates["en"])
         return {
@@ -674,7 +868,7 @@ class LlamaStoryEngine:
             "keywords":   keywords,
             "characters": [],
             "locations":  [],
-            "model":      "fallback-template",
+            "model":      "error-fallback",
         }
 
     def is_ready(self) -> bool:

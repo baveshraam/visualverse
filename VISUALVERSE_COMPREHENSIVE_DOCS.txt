@@ -1,0 +1,97 @@
+VISUALVERSE: DUAL-MODE NLP SYSTEM
+COMPREHENSIVE PROJECT DOCUMENTATION
+================================================================================
+
+1. ABSTRACT & OVERVIEW
+--------------------------------------------------------------------------------
+VisualVerse is an intelligent text-visualization system that transforms plain text into two distinct visual formats based on the semantic structure of the content:
+- Comic Strips -> For narrative or story-based text.
+- Mind-Maps -> For informational or conceptual text.
+
+The system uses a complete Natural Language Processing (NLP) pipeline for text understanding, sentiment classification, entity extraction, and structured visualization strategies for visually mapping the parsed content.
+
+2. OVERALL SYSTEM ARCHITECTURE & FLOW
+--------------------------------------------------------------------------------
+[ USER INPUT ] (Story, Concept Text, or Keywords)
+      |
+[ NLP PREPROCESSING ] (SpaCy: Tokenization -> POS Tagging -> NER -> Dependency Parsing)
+      |
+[ TEXT CLASSIFICATION ] (Random Forest Classifier + TF-IDF)
+      |
+      +---> [ NARRATIVE ROUTE ] ---> Comic Generator / Image Synthesizer ---> Comic Strip
+      |
+      +---> [ INFORMATIONAL ROUTE ] ---> Keyphrase & Topic Modeling ---> Mind-Map Generator ---> Interactive Mind-Map
+
+
+3. CORE NLP METHODOLOGIES & PIPELINES
+--------------------------------------------------------------------------------
+3.1. NLP Preprocessing
+- Tokenization: Splitting text into basic token units (via SpaCy).
+- Sentence Splitting: Boundry detection for scene segregation.
+- Morphology/Lemmatization: Normalizing keyphrases.
+- NER (Named Entity Recognition): Identifying PERSON, ORG, GPE strings.
+- Dependency Parsing: Mapping syntax subjects-verb-object relations.
+
+3.2. Text Classification
+- Model: Random Forest Classifier + TF-IDF + Handcrafted Features.
+- Handcrafted features extracted: `narrative_pronouns` ratio, `past_tense_ratio`, `dialogue_ratio`, `said_verbs_ratio`, etc.
+- Purpose: Dynamically classifying input as a 'Story' or 'Information' so the system routes correctly.
+
+3.3. Keyphrase Extraction Pipeline (Hybrid)
+Used primarily in the Mind-Map Route.
+- Step 1: Candidate Generation via SpaCy (NER, Noun Chunks, Subject/Object dependencies).
+- Step 2: Extracting 11 features (statistical like freq/pos & NLP-derived).
+- Step 3: Gradient Boosting Classifier to score/predict `P(is_keyphrase)`.
+
+3.4. Topic Modeling & Relation Extraction
+- Topic Modeling: Latent Dirichlet Allocation (LDA) for treating a document as a mixture of topics. Semantic clustering grouping related phrases (e.g. Frontend vs Backend grouping).
+- Relation Extraction: Extracting Subject-Verb-Object via dependency head-trailing.
+
+
+4. VISUALIZATION PIPELINE
+--------------------------------------------------------------------------------
+4.1. Mind-Map Generator
+- Graph Engine: `NetworkX` graph mapping converted into visual UI via `PyVis`.
+- Layout Algorithim (3-levels): 
+  - Level 0: Main Subject at the Top Center.
+  - Level 1: Categories spread out horizontally.
+  - Level 2: Target specifics/keyphrases clustered sequentially at the bottom.
+
+4.2. Image & Comic Generation Engine
+- Comic generator maps extracted scenes (Characters + Locations + Actions) into prompts.
+- Image Generation (Local SD 1.5): Utilizes Stable Diffusion v1.5 augmented with Latent Consistency Model (LCM) LoRA.
+  - LCM LoRA optimizes traditional 20-25 DDIM steps down to just 4-8 steps (~1.5 seconds per generated image) while using ~2.5GB of VRAM.
+  - Employs attention slicing and vae_slicing for heavily optimized memory usage.
+- Fallback/Cloud Route: Utilizes `gemini-3.1-flash-image-preview` via Google GenAI for prompt-to-image API generation if SD fails.
+
+
+5. MULTILINGUAL HYBRID NARRATIVE ENGINE 
+--------------------------------------------------------------------------------
+The system supports generating original narratives (Stories) from raw keywords in English, Hindi, and Tamil. 
+
+5.1. The Legacy Generation Approach
+- Utilized 3 standalone, fine-tuned `distilgpt2` models trained on the WritingPrompts dataset (English) and synthetically translated ones (Hindi/Tamil).
+
+5.2. The Modern "Hybrid Gemini" Story Engine
+The latest narrative generation approach uses a highly advanced LLM pipeline utilizing `unsloth/Llama-3.2-3B-Instruct` (quantized to 4-bit NF4 using bitsandbytes) and the Gemini Pro API. 
+
+- NLP Pre-Pipeline & "Zero-Invention" constraint: Before any generation, the system runs SpaCy to identify Entities. These characters and locations are hard-injected into the LLM context prompt to enforce a purely strict context without hallucinating new objects.
+  
+- The English & Hindi Route: The local Llama 3B processes the keywords via rigid Few-Shot anchors and system prompts to immediately generate exactly 4 comic-scene-ready paragraphs.
+
+- The Tamil Route (Llama + Gemini Hybrid Pipeline):
+  1. Stage 1 (Llama): Llama model strictly extracts 4 numbered **English SVO** (Subject-Verb-Object) plot anchor sentences based on the keywords. Llama is used because it excels at logical English sentence structuring.
+  2. Stage 2 (Gemini): The 4 SVO plot points are securely routed to the `gemini-1.5-flash` model, prompting it to natively expand each plot-point into a 60-word pure Tamil prose text block.
+  3. Stage 3 (Guardrails): The output runs through rigid RegEx post-processing, destroying any "Token/Inference" hallucinated labels, restricting foreign letters, and constraining the text physically into 4 cohesive paragraphs.
+
+
+6. TECHNOLOGY STACK
+--------------------------------------------------------------------------------
+- Backend Core: Python 3.11, FastAPI, Uvicorn
+- Base NLP Models: SpaCy (`en_core_web_sm`), Langdetect, NLTK, KeyBERT, scikit-learn.
+- GenAI Integration: Transformers, torch, bitsandbytes (4-bit load), diffusers+LCM LoRA, google-genai.
+- Frontend: React + TypeScript + Vite.
+- Visualizations: NetworkX, PyVis.
+- Deployment: Docker & Render.
+
+This document represents the end-to-end holistic view from data entry, semantic processing, text classification, and structured generative visualization within the VisualVerse domain framework.

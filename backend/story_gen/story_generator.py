@@ -211,40 +211,14 @@ class StoryGenerator:
     
     def _generate_fallback_story(self, keywords: str, language: str) -> Dict[str, Any]:
         """
-        Generate a simple template-based story when model is not available
-        Used as fallback during development or if model fails to load
+        Templates have been removed from actual generation. This function 
+        is strictly an error-state absolute fallback to prevent API crashes.
+        It no longer injects external language characters.
         """
         templates = {
-            "en": (
-                f"In a world shaped by {keywords}, a remarkable tale unfolds. "
-                f"Our protagonist embarks on an extraordinary journey filled with challenges and discoveries. "
-                f"Along the way, they encounter obstacles that test their resolve and courage. "
-                f"Through determination and perseverance, they navigate through the complexities of their adventure. "
-                f"Each step brings new revelations and deeper understanding. "
-                f"The journey transforms them in unexpected ways, leading to profound growth. "
-                f"As the story reaches its climax, all the pieces fall into place. "
-                f"In the end, the experience leaves an indelible mark, changing everything forever."
-            ),
-            "hi": (
-                f"{keywords} से प्रेरित एक अद्भुत कहानी है। "
-                f"हमारा नायक एक असाधारण यात्रा पर निकलता है। "
-                f"रास्ते में, उन्हें कई चुनौतियों का सामना करना पड़ता है। "
-                f"दृढ़ संकल्प और साहस के साथ, वे आगे बढ़ते हैं। "
-                f"प्रत्येक कदम नई खोज लाता है। "
-                f"यात्रा उन्हें अप्रत्याशित तरीकों से बदल देती है। "
-                f"अंत में, सब कुछ अपनी जगह पर आ जाता है। "
-                f"यह अनुभव हमेशा के लिए सब कुछ बदल देता है।"
-            ),
-            "ta": (
-                f"{keywords} சார்ந்த ஒரு அற்புதமான கதை. "
-                f"நம் கதாநாயகன் ஒரு அசாதாரண பயணத்தைத் தொடங்குகிறார். "
-                f"வழியில், அவர் பல சவால்களை எதிர்கொள்கிறார். "
-                f"உறுதியுடனும் தைரியத்துடனும், அவர் முன்னேறுகிறார். "
-                f"ஒவ்வொரு அடியும் புதிய கண்டுபிடிப்புகளைக் கொண்டுவருகிறது. "
-                f"பயணம் அவரை எதிர்பாராத வழிகளில் மாற்றுகிறது. "
-                f"இறுதியில், அனைத்தும் சரியான இடத்தில் வருகின்றன. "
-                f"இந்த அனுபவம் எப்போதும் எல்லாவற்றையும் மாற்றுகிறது."
-            )
+            "en": "Generation failed. Please try again.",
+            "hi": "Generation failed. Please try again.",
+            "ta": "Generation failed. Please try again.",
         }
         
         story = templates.get(language, templates["en"])
@@ -254,7 +228,7 @@ class StoryGenerator:
             "word_count": len(story.split()),
             "language": language,
             "keywords": keywords,
-            "model": "fallback-template"
+            "model": "error-fallback"
         }
     
     def is_ready(self, language: str = "en") -> bool:

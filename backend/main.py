@@ -137,7 +137,7 @@ class ImageRequest(BaseModel):
 
 class StoryRequest(BaseModel):
     keywords: str
-    language: Optional[str] = "en"   # "en" | "hi" | "ta"
+    language: Optional[str] = "auto"   # "auto" | "en" | "hi" | "ta"
 
 
 class StoryResponse(BaseModel):
@@ -278,10 +278,10 @@ async def generate_story(request: StoryRequest):
 
     Falls back to GPT-2 models when Llama engine is unavailable.
     """
-    if request.language not in ("en", "hi", "ta"):
+    if request.language not in ("auto", "en", "hi", "ta"):
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported language '{request.language}'. Choose: en, hi, ta",
+            detail=f"Unsupported language '{request.language}'. Choose: auto, en, hi, ta",
         )
 
     try:
