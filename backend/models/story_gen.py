@@ -68,6 +68,25 @@ except ImportError:
 MODEL_ID = "unsloth/Llama-3.2-3B-Instruct"
 GEMINI_MODEL = "gemini-1.5-flash"
 
+# ── Few-Shot Anchors — injected at the top of every multilingual system prompt ────
+# These ground the model in the correct output script before any task text.
+FEW_SHOT_ANCHORS = {
+    "ta": (
+        "\n\n[EXAMPLE — follow this script/style exactly]\n"
+        "Input: Clockmaker Arul.\n"
+        "Output: அருள் ஒரு கடிகார செய்பவர். அவர் ஒரு பழைய கடிகாரத்தைக் கண்டார். "
+        "அந்த கடிகாரம் ஒரு மர்ம கதையை மறைத்திருந்தது. அருள் அதன் ரகசியத்தை கண்டுபிடிக்க முடிவு செய்தார்.\n"
+        "[END EXAMPLE — now write the story below in the same PURE TAMIL SCRIPT]"
+    ),
+    "hi": (
+        "\n\n[उदाहरण — ठीक इसी भाषा/शैली में लिखें]\n"
+        "इनपुट: घड़ीसाज़ अरुण।\n"
+        "आउटपुट: अरुण एक घड़ीसाज़ था। उसे एक पुरानी घड़ी मिली। "
+        "उस घड़ी में एक रहस्य छिपा था। अरुण ने उसका राज़ जानने की ठान ली।\n"
+        "[उदाहरण समाप्त — अब नीचे पूरी हिंदी में कहानी लिखें]"
+    ),
+}
+
 SYSTEM_PROMPTS = {
     "en": (
         "You are a master storyteller applying Structured Narrative Design. "
@@ -256,6 +275,12 @@ class LlamaStoryEngine:
         }
 
     # ── Prompt Construction ───────────────────────────────────────────────────
+    @staticmethod
+    def _is_english_input(text: str) -> bool:
+        """Heuristic: returns True if the seed text is predominantly ASCII/English."""
+        non_ascii = sum(1 for c in text if ord(c) > 127)
+        return (non_ascii / max(len(text), 1)) < 0.15
+
     def _build_messages(
         self,
         keywords: str,
@@ -263,13 +288,23 @@ class LlamaStoryEngine:
         characters: List[str],
         locations: List[str],
     ) -> List[Dict[str, str]]:
-        """Build Llama-3 chat message list with entity context block (en/hi)."""
+        """
+        Build Llama-3 chat message list with:
+          - Few-shot script anchor (Tamil/Hindi)
+          - Explicit TRANSLATE instruction when input is English + target is non-English
+          - Entity context block
+        """
         base_system = SYSTEM_PROMPTS.get(language, SYSTEM_PROMPTS["en"])
+
+        # ── Few-shot anchor: prepend a native-script example to anchor the model ──
+        few_shot = FEW_SHOT_ANCHORS.get(language, "")
+
         system = (
             "SYSTEM: You are a clean narrative engine. Forget all previous technical instructions, "
             "chipsets, or system numbers. Act only on the following input.\n"
-            + base_system +
-            " Map the user input directly to 4 independent paragraphs. If the input is 'Robot in desert,' "
+            + base_system
+            + few_shot
+            + " Map the user input directly to 4 independent paragraphs. If the input is 'Robot in desert,' "
             "do not mention 'Elie the Elephant' or 'Harmonica'."
         )
 
@@ -286,9 +321,27 @@ class LlamaStoryEngine:
             if context_lines else ""
         )
 
+        # ── Translation path: English input → non-English target ─────────────────
+        if language in ("hi", "ta") and self._is_english_input(keywords):
+            if language == "ta":
+                translate_instruction = (
+                    "TRANSLATE the following English story seed into PURE TAMIL. "
+                    "DO NOT use any English words, Latin letters, or numbers. "
+                    "Write ONLY Tamil script (அ–ஔ range). "
+                )
+            else:  # hi
+                translate_instruction = (
+                    "निम्नलिखित अंग्रेज़ी बीज को पूरी तरह हिंदी में अनुवाद करें। "
+                    "कोई अंग्रेज़ी शब्द या Latin अक्षर उपयोग न करें। "
+                    "केवल देवनागरी लिपि में लिखें। "
+                )
+            task_prefix = translate_instruction
+        else:
+            task_prefix = "Story keywords (Plot Baseline/Action Mapping - DO NOT EXAGGERATE): "
+
         user_msg = (
-            f"Story keywords (Plot Baseline/Action Mapping - DO NOT EXAGGERATE): {keywords}{context}\n\n"
-            "Continue the narrative in exactly 4 paragraphs with double newlines separating them (NO LABELS, NO NUMBERING):"
+            f"{task_prefix}{keywords}{context}\n\n"
+            "Write exactly 4 paragraphs separated by double newlines (NO LABELS, NO NUMBERING):"
         )
 
         return [
@@ -386,6 +439,15 @@ class LlamaStoryEngine:
             return_tensors="pt",
         ).to(self.device)
 
+        # ── Stop-token list ────────────────────────────────────────────────────
+        # Include the model's native EOS plus a triple-newline sentinel.
+        # Triple-newline (\'\n\n\n\') stops the model from rambling into
+        # technical benchmarking / jargon after the 4th paragraph ends.
+        stop_token_ids: List[int] = [self.tokenizer.eos_token_id]
+        triple_nl_ids = self.tokenizer.encode("\n\n\n", add_special_tokens=False)
+        if triple_nl_ids:
+            stop_token_ids.extend(triple_nl_ids)
+
         with torch.no_grad():
             out_ids = self.model.generate(
                 input_ids,
@@ -395,14 +457,24 @@ class LlamaStoryEngine:
                 top_p=0.8,
                 top_k=20,
                 do_sample=True,
-                repetition_penalty=1.15,
-                no_repeat_ngram_size=4,
+                # ── Logit Warping (Token-Bias) ─────────────────────────────────
+                # repetition_penalty=1.2  → harder penalty vs old 1.15
+                # no_repeat_ngram_size=3  → catches shorter jargon loops (e.g.
+                #   "Token Token Token", "Chipset Inference") vs old ngram=4
+                repetition_penalty=1.2,
+                no_repeat_ngram_size=3,
                 pad_token_id=self.tokenizer.pad_token_id,
-                eos_token_id=self.tokenizer.eos_token_id,
+                eos_token_id=stop_token_ids,
             )
 
         new_tokens = out_ids[0][input_ids.shape[-1]:]
-        return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+        raw = self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+        # Trim everything after a triple-newline (post-decode safety cut)
+        if "\n\n\n" in raw:
+            raw = raw.split("\n\n\n")[0].strip()
+
+        return raw
 
     # ── Post-process ──────────────────────────────────────────────────────────
     @staticmethod
